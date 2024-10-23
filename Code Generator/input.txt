@@ -1,0 +1,8 @@
+t1 = a + b
+t2 = c - d
+x = t1
+goto L1
+if x == y goto L2
+L1:
+z = t2
+L2:
