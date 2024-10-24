@@ -1,4 +1,6 @@
 Compiler Design in Action
+
+
 This repository contains a collection of practical programs developed for the Compiler Design Lab, focusing on key aspects of compiler construction such as lexical analysis, parsing, and code generation using Flex, Bison, and GCC. Each module provides hands-on experience with essential compiler design concepts.
 
 Table of Contents
