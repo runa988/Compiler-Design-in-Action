@@ -1,62 +1,60 @@
 %{
-#include<stdio.h>
-#include<stdlib.h>
-int temp_count=0;
-void yyerror(const char*s){
-fprintf(stderr,"Error:%s\n",s);
-}
-%}
-%token NUM EOL
-%left '+' '-'
-%left '*' '/'
-%%
-program:lines
-;
-lines:lines line
-| line
-;
-line:expr EOL
-{
-printf("Result:t%d\n",$1);
-}
-;
-expr:NUM{
-$$=$1;
-}
-| '(' expr ')'
-{
-$$=$2;
-}
-| expr '+' expr
-{
-printf("t%d=%d+%d\n",++temp_count,$1,$3);
-$$=temp_count;
-}
-| expr '-' expr
-{
-printf("t%d=%d-%d\n",++temp_count,$1,$3);
-$$=temp_count;
-}
-| expr '*' expr
-{
-printf("t%d=%d*%d\n",++temp_count,$1,$3);
-$$=temp_count;
-}
-| expr '/' expr
-{
-if($3==0)
-{yyerror("Division by zero");
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-$$=0;}
-else{
-printf("t%d=%d/%d\n",++temp_count,$1,$3);
-$$=temp_count;
+int yylex();
+void yyerror(const char *s);
+
+int temp_count = 1;
+%}
+
+%union {
+    char *str;
 }
-}
-;
+
+%token <str> NUMBER
+%type <str> E
+
+/* Operator precedence */
+%left '+'
+%left '*'
+
 %%
-int main()
-{
-yyparse();
-return 0;
+
+S : E {
+        printf("Result: %s\n", $1);
+    }
+  ;
+
+E : E '+' E {
+        char temp[10];
+        sprintf(temp, "t%d", temp_count++);
+        printf("%s = %s + %s\n", temp, $1, $3);
+        $$ = strdup(temp);
+    }
+  | E '*' E {
+        char temp[10];
+        sprintf(temp, "t%d", temp_count++);
+        printf("%s = %s * %s\n", temp, $1, $3);
+        $$ = strdup(temp);
+    }
+  | '(' E ')' {
+        $$ = $2;
+    }
+  | NUMBER {
+        $$ = strdup($1);
+    }
+  ;
+
+%%
+
+void yyerror(const char *s) {
+    printf("Error: %s\n", s);
+}
+
+int main() {
+    printf("Enter expression:\n");
+    yyparse();
+    return 0;
 }
